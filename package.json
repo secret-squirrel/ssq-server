@@ -1,0 +1,26 @@
+{
+  "name": "pms-server",
+  "version": "0.0.0",
+  "description": "Secure password server",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twg/pms-server"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/twg/pms-server/issues"
+  },
+  "dependencies": {
+    "ws": "~0.4.31",
+    "sequelize": "~1.7.0",
+    "ursa": "~0.8.0"
+  },
+  "devDependencies": {
+    "mocha": "~1.18.2",
+    "chai": "~1.9.1"
+  }
+}
