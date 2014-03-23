@@ -9,6 +9,7 @@ var url                = require("url")
   , Transaction        = require("./transaction")
   , TransactionManager = require('./transaction-manager')
   , QueryTypes         = require('./query-types')
+  , sequelizeErrors    = require('./errors')
 
 module.exports = (function() {
   /**
@@ -155,6 +156,15 @@ module.exports = (function() {
   })
 
   /**
+   * Expose Sequelize Error types
+   */
+  Sequelize.prototype.Error = Sequelize.Error =
+    sequelizeErrors.BaseError
+  Sequelize.prototype.ValidationError = Sequelize.ValidationError =
+    sequelizeErrors.ValidationError
+
+
+  /**
    * Returns the specified dialect.
    *
    * @return {String} The specified dialect.
@@ -231,7 +241,7 @@ module.exports = (function() {
 
       if (dataType.toString() === "ENUM") {
         attributes[name].validate = attributes[name].validate || {
-          _checkEnum: function(value) {
+          _checkEnum: function(value, next) {
             var hasValue        = value !== undefined
               , isMySQL         = ['mysql', 'mariadb'].indexOf(self.options.dialect) !== -1
               , ciCollation     = !!options.collate && options.collate.match(/_ci$/i) !== null
@@ -246,8 +256,9 @@ module.exports = (function() {
             }
 
             if (hasValue && valueOutOfScope && !(attributes[name].allowNull === true && values[attrName] === null)) {
-              throw new Error('Value "' + value + '" for ENUM ' + name + ' is out of allowed scope. Allowed values: ' + attributes[name].values.join(', '))
+              return next('Value "' + value + '" for ENUM ' + name + ' is out of allowed scope. Allowed values: ' + attributes[name].values.join(', '))
             }
+            next()
           }
         }
       }

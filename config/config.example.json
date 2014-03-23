@@ -1,0 +1,20 @@
+{
+  "development": {
+    "username": null,
+    "password": null,
+    "database": "pms_development",
+    "host": "localhost"
+  },
+  "test": {
+    "username": null,
+    "password": null,
+    "database": "pms_test",
+    "host": "localhost"
+  },
+  "production": {
+    "username": null,
+    "password": null,
+    "database": "pms_production",
+    "host": "localhost"
+  }
+}
