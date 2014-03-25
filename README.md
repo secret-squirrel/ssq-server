@@ -15,11 +15,14 @@ Secret Squirrel Server
 git clone
 npm install
 npm install -g sequelize
+npm install -g pg
 
-createdb pms_development
+Copy config/config.example.json to config/config.json and add the appropriate values for your local environment.
+
+createdb squirrel_development
 sequelize -m              # run migrations
 
-createdb pms_test
+createdb squirrel_test
 sequelize -m -e test
 ```
 
