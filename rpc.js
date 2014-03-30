@@ -1,10 +1,7 @@
 var jayson = require('jayson')
 
 var app = jayson.server({
-  User: require('./lib/rpc/user'),
-  add: function(a, b, callback) {
-    callback(null, a + b);
-  }
+  User: require('./lib/rpc/user')
 })
 
 module.exports = function(request) {
