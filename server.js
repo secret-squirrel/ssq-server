@@ -1,6 +1,7 @@
 var fs = require('fs')
 var https = require('https')
 var WebSocketServer = require('ws').Server
+var rpc = require('./rpc')
 
 // Dummy request handler
 function processRequest(req, res) {
@@ -20,10 +21,8 @@ wss.on('connection', function(ws) {
   console.log('Connected.')
 
   ws.on('message', function(message) {
-    console.log(message)
-    if(message === 'PING!') {
-      ws.send('PONG!')
-    }
+    console.log('Received: ' + JSON.stringify(message))
+    rpc(message)
   })
 
   ws.on('close', function() {
