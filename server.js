@@ -18,15 +18,32 @@ var app = https.createServer({
 var wss = new WebSocketServer({server: app})
 
 wss.on('connection', function(ws) {
-  console.log('Connected.')
-
   ws.on('message', function(message) {
-    console.log('Received: ' + JSON.stringify(message))
-    rpc(message)
+    var request = JSON.parse(message)
+    rpc(request, function(err, result) {
+      reply(err, result)  
+    })
   })
 
   ws.on('close', function() {
-    console.log('Disconnected.')
     ws.close()
   })
+
+  function reply(err, result) {
+    var msg
+    if(err) {
+      msg = err
+    } else {
+      msg = result
+    }
+
+    // notifications don't set an id.
+    if(!msg.id) return; 
+
+    ws.send(JSON.stringify(msg), function(err) {
+      if(err) {
+        console.log('An error occurred while sending reply: ' + JSON.stringify(msg))
+      }
+    })
+  }
 })
