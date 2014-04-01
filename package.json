@@ -4,7 +4,8 @@
   "description": "Secure password server",
   "main": "server.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha"
+    "test": "./node_modules/.bin/mocha",
+    "start": "node lib/server"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,8 @@
     "sequelize": "~2.0.0-dev10",
     "ursa": "~0.8.0",
     "pg": "~2.11.1",
-    "jayson": "https://github.com/mmacaulay/jayson/tarball/master"
+    "jayson": "https://github.com/mmacaulay/jayson/tarball/master",
+    "commander": "~2.2.0"
   },
   "devDependencies": {
     "mocha": "~1.18.2",
