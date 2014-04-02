@@ -8,5 +8,5 @@ program
   .option('-p, --port [port]', 'Server port [5000]', 5000)
   .parse(process.argv)
 
-require('./lib/https-server').listen(program.port)
-require('./lib/ws-server')
+require('./lib/https/server').listen(program.port)
+require('./lib/ws/server')
