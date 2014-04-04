@@ -29,6 +29,7 @@
     "mocha": "~1.18.2",
     "chai": "~1.9.1",
     "chai-as-promised": "~4.1.1",
-    "request": "~2.34.0"
+    "request": "~2.34.0",
+    "sequelize-fixtures": "~0.1.0"
   }
 }
