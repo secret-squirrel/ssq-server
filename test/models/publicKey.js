@@ -3,13 +3,14 @@ var PublicKey = require('../../lib/models/publicKey')
 describe('PublicKey', function() {
   function publicKeyFactory() {
     return {
-      publicKey: '',
-      fingerprint: ''
+      publicKey: 'test key',
+      fingerprint: 'test fingerprint',
+      userId: 1
     }
   }
 
   beforeEach(function(done) {
-    assert.isFulfilled(db.query('TRUNCATE publicKeys')).notify(done)
+    assert.isFulfilled(db.query('TRUNCATE "publicKeys"')).notify(done)
   })
 
   it('can create a new record', function(done) {
@@ -28,7 +29,7 @@ describe('PublicKey', function() {
     it('forces uniqueness of fingerprint and publicKey fields', function(done) {
       assert.isFulfilled(PublicKey.create(publicKeyFactory()))
         .then(function() {
-          return assert.isRejected(PublickKey.create(publicKeyFactory()))
+          return assert.isRejected(PublicKey.create(publicKeyFactory()))
         }).done(function(err) {
           assert.property(err, 'fingerprint')
           assert.include(err.fingerprint[0], 'not unique')
