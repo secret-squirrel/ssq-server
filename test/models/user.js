@@ -3,9 +3,8 @@ var User = require('../../lib/models/user')
 describe('User', function() {
   function userFactory() {
     return {
-      firstName: 'Jane',
-      lastName: 'Doe',
-      email: 'janedoe@example.com'
+      name: 'Alice',
+      email: 'alice@example.com'
     }
   }
 
@@ -20,8 +19,7 @@ describe('User', function() {
   describe('validation', function() {
     it('requires the presence of basic fields', function(done) {
       User.create().fail(function(err) {
-        assert.property(err, 'firstName')
-        assert.property(err, 'lastName')
+        assert.property(err, 'name')
         assert.property(err, 'email')
         done()
       })
