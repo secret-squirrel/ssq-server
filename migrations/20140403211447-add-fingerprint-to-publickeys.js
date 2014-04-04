@@ -2,7 +2,8 @@ module.exports = {
   up: function(migration, DataTypes, done) {
     migration.addColumn('userPublicKeys', 'fingerprint', {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      unique: true
     })
     done()
   },
