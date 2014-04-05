@@ -1,6 +1,6 @@
 var PublicKey = require('../../lib/models/publicKey')
 
-describe('PublicKey', function() {
+describe('models/publicKey', function() {
   function publicKeyFactory() {
     return {
       publicKey: 'test key',

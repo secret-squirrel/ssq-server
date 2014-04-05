@@ -9,13 +9,15 @@ var loadFixtures = require('sequelize-fixtures').loadFixtures
 function load(callback) {
   User.find({ where: { name: 'Alice' }}).success(function(user) {
     var publicKey = ursa.coercePublicKey(fs.readFileSync(path.join(__dirname, 'data/example.pub')))
+    var publicPem = publicKey.toPublicPem('base64')
     var fingerprint = publicKey.toPublicSshFingerprint('base64')
+
     var fixtures = [
       {
         model: 'PublicKey',
         data: {
           userId: user.id,
-          publicKey: publicKey.toPublicPem('base64'),
+          publicKey: publicPem,
           fingerprint: fingerprint
         }
       }

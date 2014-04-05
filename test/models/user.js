@@ -1,6 +1,6 @@
 var User = require('../../lib/models/user')
 
-describe('User', function() {
+describe('models/user', function() {
   function userFactory() {
     return {
       name: 'Alice',

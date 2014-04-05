@@ -1,6 +1,6 @@
 var Login = require('../../lib/models/login')
 
-describe('Login', function() {
+describe('models/login', function() {
   function loginFactory() {
     return {
       name: 'Test login',

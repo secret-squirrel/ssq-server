@@ -1,1 +1,3 @@
-too many secrets
+# password is "foobar", example.pem was generated with:
+
+openssl genrsa -passout pass:foobar 2048
