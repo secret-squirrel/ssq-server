@@ -1,3 +1,5 @@
 # password is "foobar", example.pem was generated with:
+openssl genrsa -aes256 -passout pass:foobar -out example.pem 2048
 
-openssl genrsa -passout pass:foobar 2048
+# public key was extracted with:
+openssl rsa -in example.pem -passin pass:foobar -pubout -out example.pub
