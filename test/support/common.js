@@ -18,5 +18,3 @@ global.rejectedPromise = Q.reject
 global.defer = Q.defer
 
 global.db = require('../../lib/db')
-
-require('../fixtures').load()

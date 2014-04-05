@@ -6,7 +6,7 @@ var rpcUser = require('../../lib/rpc/user')(mockUser, mockPublicKey, mockWs)
 
 describe('rpc/user', function() {
   beforeEach(function(done) {
-    assert.isFulfilled(db.query('TRUNCATE "users"')).notify(done)
+    assert.isFulfilled(db.query('TRUNCATE users')).notify(done)
   })
 
   beforeEach(function(done) {
@@ -56,14 +56,39 @@ describe('rpc/user', function() {
 
   describe('put', function() {
     it('creates a new user', function(done) {
-      assert.notOk('todo')
+      var userData = {
+        name: 'Test user',
+        email: 'test@example.com'
+      }
+      rpcUser.put(userData, function(err, result) {
+        assert.notOk(err)
+        assert.equal(userData.name, result.name)
+        assert.equal(userData.email, result.email)
+        assert.isNumber(result.id)
+        done()
+      })
     })
 
     it('updates an existing user', function(done) {
-      assert.notOk('todo')
+      var userData = allUsers[0].dataValues
+      userData.name = 'Updated Name'
+      rpcUser.put(userData, function(err, result) {
+        assert.notOk(err)
+        assert.equal(userData.name, result.name)
+        assert.equal(userData.id, result.id)
+        User.find(userData.id).success(function(user) {
+          assert.ok(user)
+          assert.equal(userData.name, user.name)
+          done()
+        })
+      })
     })
 
     it('rejects invalid user objects', function(done) {
+      assert.notOk('todo')
+    })
+
+    it('fails to update non-existant users', function(done) {
       assert.notOk('todo')
     })
   })
