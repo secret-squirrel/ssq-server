@@ -37,8 +37,8 @@ describe('ws/authenticate', function() {
 
   var privateKey, fingerprint, unauthorizedPrivateKey
   before(function(done) {
-    privateKey = ursa.createPrivateKey(loadPem('example.pem'), 'too many secrets', 'utf8')
-    unauthorizedPrivateKey = ursa.createPrivateKey(loadPem('unauthorized.pem'), 'too many secrets', 'utf8')
+    privateKey = ursa.createPrivateKey(loadPem('example.pem'), 'foobar', 'utf8')
+    unauthorizedPrivateKey = ursa.createPrivateKey(loadPem('unauthorized.pem'), 'foobar', 'utf8')
     fingerprint = privateKey.toPublicSshFingerprint('base64')
     done()
   })
