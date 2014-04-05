@@ -1,8 +1,10 @@
-var rpc = require('../lib/rpc')
+var mockUser = {}
+var mockPublicKey = {}
+var mockWs = {}
+var rpc = require('../lib/rpc')(mockUser, mockPublicKey, mockWs)
 var client = require('jayson').client(rpc)
 
 describe('rpc', function() {
-
   it('dispatches notifications', function(done) {
     client.request('heartbeat', ['test!'], null, function(err, msg) {
       done()
