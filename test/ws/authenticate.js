@@ -177,5 +177,4 @@ describe('ws/authenticate', function() {
       }
     })
   })
-
 })
