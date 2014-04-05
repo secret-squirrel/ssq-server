@@ -40,5 +40,30 @@ describe('models/link', function() {
         })
     })
 
+    it('disallows unknown fromType values', function(done) {
+      Link.create({
+        fromType: 'egg',
+        toType: 'secret',
+        fromId: 123,
+        toId: 456
+      }).fail(function(err) {
+        assert.property(err, 'allowedRelationship')
+        assert.include(err.allowedRelationship[0], 'Invalid fromType')
+        done()
+      })
+    })
+
+    it('disallows unknown toType values', function(done) {
+      Link.create({
+        fromType: 'login',
+        toType: 'egg',
+        fromId: 123,
+        toId: 456
+      }).fail(function(err) {
+        assert.property(err, 'allowedRelationship')
+        assert.include(err.allowedRelationship[0], 'Invalid toType')
+        done()
+      })
+    })
   })
 })
