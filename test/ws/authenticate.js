@@ -31,10 +31,6 @@ describe('ws/authenticate', function() {
     httpsServer.listen(port)
   })
 
-  before(function(done) {
-    require('../fixtures').load(done)
-  })
-
   var privateKey, fingerprint, unauthorizedPrivateKey
   before(function(done) {
     privateKey = ursa.createPrivateKey(loadPem('example.pem'), 'foobar', 'utf8')
