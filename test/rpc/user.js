@@ -85,11 +85,22 @@ describe('rpc/user', function() {
     })
 
     it('rejects invalid user objects', function(done) {
-      assert.notOk('todo')
+      rpcUser.put({}, function(err, result) {
+        assert.ok(err)
+        assert.notOk(result)
+        assert.property(err, 'name')
+        assert.property(err, 'email')
+        done()
+      })
     })
 
     it('fails to update non-existant users', function(done) {
-      assert.notOk('todo')
+      rpcUser.put({id: 999}, function(err, result) {
+        assert.ok(err)
+        assert.notOk(result)
+        assert.include(err, 'User not found')
+        done()
+      })
     })
   })
 
@@ -113,5 +124,4 @@ describe('rpc/user', function() {
       })
     })
   })
-
 })
