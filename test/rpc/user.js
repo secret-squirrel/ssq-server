@@ -1,4 +1,6 @@
-var mockUser = {}
+var mockUser = {
+  isAdmin: true
+}
 var mockPublicKey = {}
 var mockWs = {}
 var User = require('../../lib/models/user')
@@ -120,6 +122,32 @@ describe('rpc/user', function() {
       rpcUser.del(999, function(err) {
         assert.ok(err)
         assert.include(err.msg, 'No such user')
+        done()
+      })
+    })
+  })
+
+  describe('access control', function() {
+    before(function() {
+      mockUser.isAdmin = false
+    })
+
+    after(function() {
+      mockUser.isAdmin = true
+    })
+
+    it('restricts regular users from the put method', function(done) {
+      rpcUser.put({}, function(err) {
+        assert.ok(err)
+        assert.include(err.msg, 'Denied')
+        done()
+      })
+    })
+
+    it('restricts regular users from the del method', function(done) {
+      rpcUser.del(999, function(err) {
+        assert.ok(err)
+        assert.include(err.msg, 'Denied')
         done()
       })
     })
