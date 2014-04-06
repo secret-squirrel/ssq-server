@@ -48,7 +48,7 @@ describe('rpc/user', function() {
       rpcUser.get(999, function(err, result) {
         assert.ok(err)
         assert.notOk(result)
-        assert.include(err, 'No such user')
+        assert.include(err.msg, 'No such user')
         done()
       })
     })
@@ -98,7 +98,7 @@ describe('rpc/user', function() {
       rpcUser.put({id: 999}, function(err, result) {
         assert.ok(err)
         assert.notOk(result)
-        assert.include(err, 'User not found')
+        assert.include(err.msg, 'User not found')
         done()
       })
     })
@@ -119,7 +119,7 @@ describe('rpc/user', function() {
     it('returns an error for an unknown userId', function(done) {
       rpcUser.del(999, function(err) {
         assert.ok(err)
-        assert.include(err, 'No such user')
+        assert.include(err.msg, 'No such user')
         done()
       })
     })
