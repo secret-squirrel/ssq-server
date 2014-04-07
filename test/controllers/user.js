@@ -4,9 +4,9 @@ var mockUser = {
 var mockPublicKey = {}
 var mockWs = {}
 var User = require('../../lib/models/user')
-var rpcUser = require('../../lib/rpc/user')(mockUser, mockPublicKey, mockWs)
+var rpcUser = require('../../lib/controllers/user')(mockUser, mockPublicKey, mockWs)
 
-describe('rpc/user', function() {
+describe('controllers/user', function() {
   beforeEach(function(done) {
     assert.isFulfilled(db.query('TRUNCATE users')).notify(done)
   })

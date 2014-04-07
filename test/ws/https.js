@@ -1,7 +1,7 @@
-var httpsServer = require('../../lib/https/server')
+var httpsServer = require('../../lib/ws/https')
 var request = require('request')
 
-describe('https/server', function() {
+describe('ws/https', function() {
   var port = 9999;
   var uri = 'https://localhost:' + port + '/'
 

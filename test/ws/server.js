@@ -1,5 +1,5 @@
 var WebSocket = require('ws')
-var httpsServer = require('../../lib/https/server')
+var httpsServer = require('../../lib/ws/https')
 var wsServer = require('../../lib/ws/server')
 
 describe('ws/server', function() {

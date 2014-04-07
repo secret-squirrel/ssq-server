@@ -2,7 +2,7 @@ var fs = require('fs')
 var path = require('path')
 var WebSocket = require('ws')
 var ursa = require('ursa')
-var httpsServer = require('../../lib/https/server')
+var httpsServer = require('../../lib/ws/https')
 var wsServer = require('../../lib/ws/server')
 var PublicKey = require('../../lib/models/publicKey')
 
@@ -22,8 +22,9 @@ function sendChallengeResponse(ws, request, params) {
   }))
 }
 
-function loadPem(name) {
-  return fs.readFileSync(path.join(__dirname, '../fixtures/data/' + name))
+function loadKey(name) {
+  var pem = fs.readFileSync(path.join(__dirname, '../fixtures/data/' + name))
+  return pem
 }
 
 describe('ws/authenticate', function() {
@@ -31,12 +32,21 @@ describe('ws/authenticate', function() {
     httpsServer.listen(port)
   })
 
-  var privateKey, fingerprint, unauthorizedPrivateKey
+  var privateKey, publicKey, fingerprint, unauthorizedPrivateKey
   before(function(done) {
-    privateKey = ursa.createPrivateKey(loadPem('example.pem'), 'foobar', 'utf8')
-    unauthorizedPrivateKey = ursa.createPrivateKey(loadPem('unauthorized.pem'), 'foobar', 'utf8')
-    fingerprint = privateKey.toPublicSshFingerprint('base64')
+    privateKey = ursa.createPrivateKey(loadKey('example.pem'), 'foobar', 'utf8')
+    publicKey = ursa.coercePublicKey(loadKey('example.pub'))
+    unauthorizedPrivateKey = ursa.createPrivateKey(loadKey('unauthorized.pem'), 'foobar', 'utf8')
+    fingerprint = publicKey.toPublicSshFingerprint('base64')
     done()
+  })
+
+  beforeEach(function(done) {
+    assert.isFulfilled(db.query('TRUNCATE "publicKeys"')).notify(done)
+  })
+
+  beforeEach(function(done) {
+    require('../fixtures/publicKeys')(done)
   })
 
   after(function() {
@@ -60,7 +70,7 @@ describe('ws/authenticate', function() {
           done()
           break
         default:
-          assert.notOk('unexpected message')
+          assert.notOk('unexpected message: ' + JSON.stringify(request))
           break
       }
     })
@@ -87,7 +97,7 @@ describe('ws/authenticate', function() {
           done()
           break
         default:
-          assert.notOk('unexpected message')
+          assert.notOk('unexpected message: ' + JSON.stringify(request))
           break
       }
     })
@@ -114,7 +124,7 @@ describe('ws/authenticate', function() {
           done()
           break
         default:
-          assert.notOk('unexpected message')
+          assert.notOk('unexpected message: ' + JSON.stringify(request))
           break
       }
     })
@@ -141,7 +151,7 @@ describe('ws/authenticate', function() {
           done()
           break
         default:
-          assert.notOk('unexpected message')
+          assert.notOk('unexpected message: ' + JSON.stringify(request))
           break
       }
     })
@@ -168,7 +178,7 @@ describe('ws/authenticate', function() {
           done()
           break
         default:
-          assert.notOk('unexpected message')
+          assert.notOk('unexpected message: ' + JSON.stringify(request))
           break
       }
     })
