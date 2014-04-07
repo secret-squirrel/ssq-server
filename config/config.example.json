@@ -1,20 +1,23 @@
 {
   "development": {
+    "dialect": "postgres",
     "username": null,
     "password": null,
-    "database": "pms_development",
+    "database": "squirrel_development",
     "host": "localhost"
   },
   "test": {
+    "dialect": "postgres",
     "username": null,
     "password": null,
-    "database": "pms_test",
+    "database": "squirrel_test",
     "host": "localhost"
   },
   "production": {
+    "dialect": "postgres",
     "username": null,
     "password": null,
-    "database": "pms_production",
+    "database": "squirrel_production",
     "host": "localhost"
   }
 }
