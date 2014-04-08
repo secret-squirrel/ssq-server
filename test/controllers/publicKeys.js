@@ -8,11 +8,19 @@ var rpcPublicKey = require('../../lib/controllers/publicKeys')(mockUser, mockPub
 
 describe('controllers/publicKeys', function() {
   beforeEach(function(done) {
+    assert.isFulfilled(db.query('TRUNCATE "users"')).notify(done)
+  })
+
+  beforeEach(function(done) {
     assert.isFulfilled(db.query('TRUNCATE "publicKeys"')).notify(done)
   })
 
   beforeEach(function(done) {
-    require('../fixtures/publicKeys')(done)
+    require('../fixtures/users')(done)
+  })
+
+  beforeEach(function(done) {
+    require('../fixtures/privateKeys')(done)
   })
 
   var allPublicKeys
