@@ -75,6 +75,7 @@ describe('controllers/users', function() {
       var userData = allUsers[0].dataValues
       userData.name = 'Updated Name'
       rpcUser.put(userData, function(err, result) {
+        console.log('err', err)
         assert.notOk(err)
         assert.equal(userData.name, result.name)
         assert.equal(userData.id, result.id)

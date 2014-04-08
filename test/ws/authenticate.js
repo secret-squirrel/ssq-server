@@ -130,7 +130,7 @@ describe('ws/authenticate', function() {
     })
   })
 
-  it('rejects signatures that do not match', function(done) {
+  it('rejects signatures that do not match the public key', function(done) {
     var ws = connect()
     ws.on('message', function(str) {
       var request = JSON.parse(str)

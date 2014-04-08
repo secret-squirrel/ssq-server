@@ -6,7 +6,7 @@ var fixtures = [
     model: 'User',
     data: {
       name: 'Alice',
-      email: 'example@twg.ca'
+      email: 'alice@example.com'
     }
   }
 ]
