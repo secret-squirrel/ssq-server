@@ -4,7 +4,7 @@ var mockUser = {
 var mockPublicKey = {}
 var mockWs = {}
 var PublicKey = require('../../lib/models/publicKey')
-var rpcPublicKey = require('../../lib/controllers/publicKeys')(mockUser, mockPublicKey, mockWs)
+var controller = require('../../lib/controllers/publicKeys')(mockUser, mockPublicKey, mockWs)
 
 describe('controllers/publicKeys', function() {
   beforeEach(function(done) {
@@ -20,7 +20,7 @@ describe('controllers/publicKeys', function() {
   })
 
   beforeEach(function(done) {
-    require('../fixtures/privateKeys')(done)
+    require('../fixtures/publicKeys')(done)
   })
 
   var allPublicKeys
@@ -33,7 +33,7 @@ describe('controllers/publicKeys', function() {
 
   describe('index', function() {
     it('returns all publicKeys', function(done) {
-      rpcPublicKey.index({}, function(err, results) {
+      controller.index({}, function(err, results) {
         assert.notOk(err)
         assert.ok(results)
         assert.equal(allPublicKeys.length, results.length)
@@ -45,7 +45,7 @@ describe('controllers/publicKeys', function() {
   describe('get', function() {
     it('returns a single publicKey', function(done) {
       var expectedPublicKey = allPublicKeys[0]
-      rpcPublicKey.get(expectedPublicKey.id, function(err, result) {
+      controller.get(expectedPublicKey.id, function(err, result) {
         assert.notOk(err)
         assert.ok(result)
         assert.equal(expectedPublicKey.id, result.id)
@@ -55,7 +55,7 @@ describe('controllers/publicKeys', function() {
     })
 
     it('returns an error for missing publicKeys', function(done) {
-      rpcPublicKey.get(999, function(err, result) {
+      controller.get(999, function(err, result) {
         assert.ok(err)
         assert.notOk(result)
         assert.include(err.msg, 'Not found')
@@ -71,7 +71,7 @@ describe('controllers/publicKeys', function() {
         fingerprint: 'test fingerprint',
         userId: 1
       }
-      rpcPublicKey.put(publicKeyData, function(err, result) {
+      controller.put(publicKeyData, function(err, result) {
         assert.notOk(err)
         assert.equal(publicKeyData.name, result.name)
         assert.equal(publicKeyData.email, result.email)
@@ -83,7 +83,7 @@ describe('controllers/publicKeys', function() {
     it('updates an existing publicKey', function(done) {
       var publicKeyData = allPublicKeys[0].dataValues
       publicKeyData.fingerprint = 'Updated fingerprint'
-      rpcPublicKey.put(publicKeyData, function(err, result) {
+      controller.put(publicKeyData, function(err, result) {
         assert.notOk(err)
         assert.equal(publicKeyData.fingerprint, result.fingerprint)
         assert.equal(publicKeyData.id, result.id)
@@ -96,7 +96,7 @@ describe('controllers/publicKeys', function() {
     })
 
     it('rejects invalid publicKey objects', function(done) {
-      rpcPublicKey.put({}, function(err, result) {
+      controller.put({}, function(err, result) {
         assert.ok(err)
         assert.notOk(result)
         assert.property(err, 'publicKey')
@@ -106,7 +106,7 @@ describe('controllers/publicKeys', function() {
     })
 
     it('fails to update non-existant publicKeys', function(done) {
-      rpcPublicKey.put({id: 999}, function(err, result) {
+      controller.put({id: 999}, function(err, result) {
         assert.ok(err)
         assert.notOk(result)
         assert.include(err.msg, 'Not found')
@@ -118,7 +118,7 @@ describe('controllers/publicKeys', function() {
   describe('del', function() {
     it('deletes an existing publicKey', function(done) {
       var expectedPublicKey = allPublicKeys[0]
-      rpcPublicKey.del(expectedPublicKey.id, function(err) {
+      controller.del(expectedPublicKey.id, function(err) {
         assert.notOk(err)
         PublicKey.find(expectedPublicKey.id).success(function(publicKey) {
           assert.notOk(publicKey)
@@ -128,7 +128,7 @@ describe('controllers/publicKeys', function() {
     })
 
     it('returns an error for an unknown publicKeyId', function(done) {
-      rpcPublicKey.del(999, function(err) {
+      controller.del(999, function(err) {
         assert.ok(err)
         assert.include(err.msg, 'Not found')
         done()
@@ -146,7 +146,7 @@ describe('controllers/publicKeys', function() {
     })
 
     it('restricts regular users from the put method', function(done) {
-      rpcPublicKey.put({}, function(err) {
+      controller.put({}, function(err) {
         assert.ok(err)
         assert.include(err.msg, 'Denied')
         done()
@@ -154,7 +154,7 @@ describe('controllers/publicKeys', function() {
     })
 
     it('restricts regular users from the del method', function(done) {
-      rpcPublicKey.del(999, function(err) {
+      controller.del(999, function(err) {
         assert.ok(err)
         assert.include(err.msg, 'Denied')
         done()
