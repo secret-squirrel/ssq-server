@@ -64,14 +64,14 @@ describe('controllers/publicKeys', function() {
     })
   })
 
-  describe('put', function() {
+  describe('create', function() {
     it('creates a new publicKey', function(done) {
       var publicKeyData = {
         publicKey: 'test key',
         fingerprint: 'test fingerprint',
         userId: 1
       }
-      controller.put(publicKeyData, function(err, result) {
+      controller.create(publicKeyData, function(err, result) {
         assert.notOk(err)
         assert.equal(publicKeyData.name, result.name)
         assert.equal(publicKeyData.email, result.email)
@@ -80,10 +80,22 @@ describe('controllers/publicKeys', function() {
       })
     })
 
-    it('updates an existing publicKey', function(done) {
+    it('rejects invalid publicKey objects', function(done) {
+      controller.create({}, function(err, result) {
+        assert.ok(err)
+        assert.notOk(result)
+        assert.property(err, 'publicKey')
+        assert.property(err, 'fingerprint')
+        done()
+      })
+    })
+  })
+
+  describe('update', function() {
+    it('alters an existing publicKey', function(done) {
       var publicKeyData = allPublicKeys[0].dataValues
       publicKeyData.fingerprint = 'Updated fingerprint'
-      controller.put(publicKeyData, function(err, result) {
+      controller.update(publicKeyData, function(err, result) {
         assert.notOk(err)
         assert.equal(publicKeyData.fingerprint, result.fingerprint)
         assert.equal(publicKeyData.id, result.id)
@@ -95,18 +107,17 @@ describe('controllers/publicKeys', function() {
       })
     })
 
-    it('rejects invalid publicKey objects', function(done) {
-      controller.put({}, function(err, result) {
+    it('rejects objects without an id property', function(done) {
+      controller.update({}, function(err, result) {
         assert.ok(err)
         assert.notOk(result)
-        assert.property(err, 'publicKey')
-        assert.property(err, 'fingerprint')
+        assert.include(err.msg, 'ID')
         done()
       })
     })
 
     it('fails to update non-existant publicKeys', function(done) {
-      controller.put({id: 999}, function(err, result) {
+      controller.update({id: 999}, function(err, result) {
         assert.ok(err)
         assert.notOk(result)
         assert.include(err.msg, 'Not found')
@@ -145,8 +156,16 @@ describe('controllers/publicKeys', function() {
       mockUser.isAdmin = true
     })
 
-    it('restricts regular users from the put method', function(done) {
-      controller.put({}, function(err) {
+    it('restricts regular users from the create method', function(done) {
+      controller.create({}, function(err) {
+        assert.ok(err)
+        assert.include(err.msg, 'Denied')
+        done()
+      })
+    })
+
+    it('restricts regular users from the update method', function(done) {
+      controller.update({}, function(err) {
         assert.ok(err)
         assert.include(err.msg, 'Denied')
         done()
