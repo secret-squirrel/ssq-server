@@ -4,7 +4,7 @@ var mockUser = {
 var mockPublicKey = {}
 var mockWs = {}
 var User = require('../../lib/models/user')
-var rpcUser = require('../../lib/controllers/users')(mockUser, mockPublicKey, mockWs)
+var controller = require('../../lib/controllers/users')(mockUser, mockPublicKey, mockWs)
 
 describe('controllers/users', function() {
   beforeEach(function(done) {
@@ -25,7 +25,7 @@ describe('controllers/users', function() {
 
   describe('index', function() {
     it('returns all users', function(done) {
-      rpcUser.index({}, function(err, results) {
+      controller.index({}, function(err, results) {
         assert.notOk(err)
         assert.ok(results)
         assert.equal(allUsers.length, results.length)
@@ -37,7 +37,7 @@ describe('controllers/users', function() {
   describe('get', function() {
     it('returns a single user', function(done) {
       var expectedUser = allUsers[0]
-      rpcUser.get(expectedUser.id, function(err, result) {
+      controller.get(expectedUser.id, function(err, result) {
         assert.notOk(err)
         assert.ok(result)
         assert.equal(expectedUser.id, result.id)
@@ -47,7 +47,7 @@ describe('controllers/users', function() {
     })
 
     it('returns an error for missing users', function(done) {
-      rpcUser.get(999, function(err, result) {
+      controller.get(999, function(err, result) {
         assert.ok(err)
         assert.notOk(result)
         assert.include(err.msg, 'Not found')
@@ -56,13 +56,13 @@ describe('controllers/users', function() {
     })
   })
 
-  describe('put', function() {
+  describe('create', function() {
     it('creates a new user', function(done) {
       var userData = {
         name: 'Test user',
         email: 'test@example.com'
       }
-      rpcUser.put(userData, function(err, result) {
+      controller.create(userData, function(err, result) {
         assert.notOk(err)
         assert.equal(userData.name, result.name)
         assert.equal(userData.email, result.email)
@@ -71,10 +71,22 @@ describe('controllers/users', function() {
       })
     })
 
-    it('updates an existing user', function(done) {
+    it('rejects invalid user objects', function(done) {
+      controller.create({}, function(err, result) {
+        assert.ok(err)
+        assert.notOk(result)
+        assert.property(err, 'name')
+        assert.property(err, 'email')
+        done()
+      })
+    })
+  })
+
+  describe('update', function() {
+    it('alters an existing user', function(done) {
       var userData = allUsers[0].dataValues
       userData.name = 'Updated Name'
-      rpcUser.put(userData, function(err, result) {
+      controller.update(userData, function(err, result) {
         assert.notOk(err)
         assert.equal(userData.name, result.name)
         assert.equal(userData.id, result.id)
@@ -86,18 +98,17 @@ describe('controllers/users', function() {
       })
     })
 
-    it('rejects invalid user objects', function(done) {
-      rpcUser.put({}, function(err, result) {
+    it('rejects objects without an id property', function(done) {
+      controller.update({}, function(err, result) {
         assert.ok(err)
         assert.notOk(result)
-        assert.property(err, 'name')
-        assert.property(err, 'email')
+        assert.include(err.msg, 'ID')
         done()
       })
     })
 
     it('fails to update non-existant users', function(done) {
-      rpcUser.put({id: 999}, function(err, result) {
+      controller.update({id: 999}, function(err, result) {
         assert.ok(err)
         assert.notOk(result)
         assert.include(err.msg, 'Not found')
@@ -109,7 +120,7 @@ describe('controllers/users', function() {
   describe('del', function() {
     it('deletes an existing user', function(done) {
       var expectedUser = allUsers[0]
-      rpcUser.del(expectedUser.id, function(err) {
+      controller.del(expectedUser.id, function(err) {
         assert.notOk(err)
         User.find(expectedUser.id).success(function(user) {
           assert.notOk(user)
@@ -119,7 +130,7 @@ describe('controllers/users', function() {
     })
 
     it('returns an error for an unknown userId', function(done) {
-      rpcUser.del(999, function(err) {
+      controller.del(999, function(err) {
         assert.ok(err)
         assert.include(err.msg, 'Not found')
         done()
@@ -136,8 +147,16 @@ describe('controllers/users', function() {
       mockUser.isAdmin = true
     })
 
-    it('restricts regular users from the put method', function(done) {
-      rpcUser.put({}, function(err) {
+    it('restricts regular users from the create method', function(done) {
+      controller.create({}, function(err) {
+        assert.ok(err)
+        assert.include(err.msg, 'Denied')
+        done()
+      })
+    })
+
+    it('restricts regular users from the update method', function(done) {
+      controller.update({}, function(err) {
         assert.ok(err)
         assert.include(err.msg, 'Denied')
         done()
@@ -145,7 +164,7 @@ describe('controllers/users', function() {
     })
 
     it('restricts regular users from the del method', function(done) {
-      rpcUser.del(999, function(err) {
+      controller.del(999, function(err) {
         assert.ok(err)
         assert.include(err.msg, 'Denied')
         done()
