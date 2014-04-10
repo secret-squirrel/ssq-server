@@ -15,7 +15,9 @@ describe('models/secret', function() {
   function secretFactory() {
     return {
       publicKeyId: publicKey.id,
-      cipherText: 'dummy ciphertext'
+      cipherText: 'dummy ciphertext',
+      relatedType: 'login',
+      relatedId: 123
     }
   }
 
@@ -32,6 +34,21 @@ describe('models/secret', function() {
       Secret.create().fail(function(err) {
         assert.property(err, 'publicKeyId')
         assert.property(err, 'cipherText')
+        assert.property(err, 'relatedType')
+        assert.property(err, 'relatedId')
+        done()
+      })
+    })
+
+    it('requires relatedType be of a known type', function(done) {
+      var data = {
+        publicKeyId: publicKey.id,
+        cipherText: 'dummy ciphertext',
+        relatedType: 'whatever',
+        relatedId: 123
+      }
+      Secret.create().fail(function(err) {
+        assert.property(err, 'relatedType')
         done()
       })
     })
