@@ -17,6 +17,15 @@ function load(callback) {
           publicKeyId: 123,
           cipherText: 'dummy cipher text'
         }
+      },
+      {
+        model: 'Secret',
+        data: {
+          relatedType: 'login',
+          relatedId: 111,
+          publicKeyId: 456,
+          cipherText: 'dummy cipher text'
+        }
       }
     ]
 

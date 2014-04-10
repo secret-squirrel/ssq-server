@@ -1,5 +1,7 @@
 var mockUser = {}
-var mockPublicKey = {}
+var mockPublicKey = {
+  id: 123
+}
 var mockWs = {}
 var Secret = require('../../lib/models/secret')
 var controller = require('../../lib/controllers/secrets')(mockUser, mockPublicKey, mockWs)
@@ -107,24 +109,6 @@ describe('controllers/secrets', function() {
         })
       })
     })
-
-    it('rejects objects without an id property', function(done) {
-      controller.update({}, function(err, result) {
-        assert.ok(err)
-        assert.notOk(result)
-        assert.include(err.msg, 'ID')
-        done()
-      })
-    })
-
-    it('fails to update non-existant secrets', function(done) {
-      controller.update({id: 999}, function(err, result) {
-        assert.ok(err)
-        assert.notOk(result)
-        assert.include(err.msg, 'Not found')
-        done()
-      })
-    })
   })
 
   describe('del', function() {
@@ -138,12 +122,59 @@ describe('controllers/secrets', function() {
         })
       })
     })
+  })
 
-    it('returns an error for an unknown secretId', function(done) {
+  describe('authorization', function() {
+    it('will not update objects without an id property', function(done) {
+      controller.update({}, function(err, result) {
+        assert.ok(err)
+        assert.notOk(result)
+        assert.include(err.msg, 'Denied')
+        done()
+      })
+    })
+
+    it('will not update unknown secretIds', function(done) {
+      controller.update({id: 999}, function(err, result) {
+        assert.ok(err)
+        assert.notOk(result)
+        assert.include(err.msg, 'Denied')
+        done()
+      })
+    })
+
+    it('will not del an unknown secretId', function(done) {
       controller.del(999, function(err) {
         assert.ok(err)
-        assert.include(err.msg, 'Not found')
+        assert.include(err.msg, 'Denied')
         done()
+      })
+    })
+
+    describe('modifying secrets we do not have access to', function() {
+      var unauthorizedSecret
+      before(function() {
+        unauthorizedSecret = allSecrets.filter(function(s) {
+          return s.relatedId == 111
+        })[0]
+      })
+
+      it('refuses to update', function(done) {
+        controller.update({id: unauthorizedSecret.id}, function(err, result) {
+          assert.ok(err)
+          assert.notOk(result)
+          assert.include(err.msg, 'Denied')
+          done()
+        })
+      })
+
+      it('refuses to delete', function(done) {
+        controller.del(unauthorizedSecret.id, function(err, result) {
+          assert.ok(err)
+          assert.notOk(result)
+          assert.include(err.msg, 'Denied')
+          done()
+        })
       })
     })
   })

@@ -8,6 +8,13 @@ var fixtures = [
       name: 'Sample login',
       url: 'http://example.com'
     }
+  },
+  {
+    model: 'Login',
+    data: {
+      name: 'Unauthorized login',
+      url: 'http://example.com'
+    }
   }
 ]
 
