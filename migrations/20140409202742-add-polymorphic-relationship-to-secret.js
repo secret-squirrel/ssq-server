@@ -5,11 +5,9 @@ module.exports = {
       allowNull: false
     })
     migration.addColumn('secrets', 'relatedId', {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       allowNull: false
     })
-
-    migration.addIndex('secrets', ['relatedType', 'relatedId'])
 
     done()
   },
