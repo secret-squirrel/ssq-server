@@ -19,13 +19,13 @@
     "q": "~1.0.1",
     "ws": "~0.4.31",
     "sequelize": "~2.0.0-dev10",
-    "ursa": "~0.8.0",
     "pg": "~2.11.1",
     "jayson": "https://github.com/mmacaulay/jayson/tarball/master",
     "commander": "~2.2.0",
     "bunyan": "~0.22.1",
     "async": "~0.6.2",
-    "node-uuid": "~1.4.1"
+    "node-uuid": "~1.4.1",
+    "openpgp": "~0.5.1"
   },
   "devDependencies": {
     "mocha": "~1.18.2",

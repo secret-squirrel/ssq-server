@@ -1,6 +1,6 @@
 var fs = require('fs')
 var path = require('path')
-var ursa = require('ursa')
+var openpgp = require('openpgp')
 var User = require('../../lib/models/user')
 var PublicKey = require('../../lib/models/publicKey')
 
@@ -8,17 +8,16 @@ var loadFixtures = require('sequelize-fixtures').loadFixtures
 
 function load(callback) {
   User.find({ where: { name: 'Alice' }}).success(function(user) {
-    var publicKey = ursa.coercePublicKey(fs.readFileSync(path.join(__dirname, 'data/example.pub')))
-    var publicPem = publicKey.toPublicPem('base64')
-    var fingerprint = publicKey.toPublicSshFingerprint('base64')
+    var armoredText = fs.readFileSync(path.join(__dirname, 'data/public-key.asc')).toString()
+    var publicKey = openpgp.key.readArmored(armoredText).keys[0]
 
     var fixtures = [
       {
         model: 'PublicKey',
         data: {
           userId: user.id,
-          publicKey: publicPem,
-          fingerprint: fingerprint
+          publicKey: armoredText,
+          fingerprint: publicKey.primaryKey.fingerprint
         }
       }
     ]
