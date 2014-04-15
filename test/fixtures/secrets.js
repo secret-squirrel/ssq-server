@@ -1,6 +1,5 @@
 var fs = require('fs')
 var path = require('path')
-var ursa = require('ursa')
 var Login = require('../../lib/models/login')
 var Secret = require('../../lib/models/secret')
 

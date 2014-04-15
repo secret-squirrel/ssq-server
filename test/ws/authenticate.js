@@ -1,7 +1,7 @@
 var fs = require('fs')
 var path = require('path')
 var WebSocket = require('ws')
-var ursa = require('ursa')
+var openpgp = require('openpgp')
 var httpsServer = require('../../lib/ws/https')
 var wsServer = require('../../lib/ws/server')
 var PublicKey = require('../../lib/models/publicKey')
@@ -23,8 +23,8 @@ function sendChallengeResponse(ws, request, params) {
 }
 
 function loadKey(name) {
-  var pem = fs.readFileSync(path.join(__dirname, '../fixtures/data/' + name))
-  return pem
+  var armoredText = fs.readFileSync(path.join(__dirname, '../fixtures/data/' + name)).toString()
+  return openpgp.key.readArmored(armoredText).keys[0]
 }
 
 describe('ws/authenticate', function() {
@@ -34,10 +34,14 @@ describe('ws/authenticate', function() {
 
   var privateKey, publicKey, fingerprint, unauthorizedPrivateKey
   before(function(done) {
-    privateKey = ursa.createPrivateKey(loadKey('example.pem'), 'foobar', 'utf8')
-    publicKey = ursa.coercePublicKey(loadKey('example.pub'))
-    unauthorizedPrivateKey = ursa.createPrivateKey(loadKey('unauthorized.pem'), 'foobar', 'utf8')
-    fingerprint = publicKey.toPublicSshFingerprint('base64')
+    privateKey = loadKey('private-key.asc')
+    assert(privateKey.decrypt('s00pers3krit'), 'Could not decrypt private key')
+
+    publicKey = loadKey('public-key.asc')
+    fingerprint = publicKey.primaryKey.fingerprint
+    unauthorizedPrivateKey = loadKey('unauthorized-private-key.asc')
+    unauthorizedPrivateKey.decrypt('s00pers3krit')
+
     done()
   })
 
@@ -63,7 +67,7 @@ describe('ws/authenticate', function() {
           sendChallengeResponse(ws, request, {
             algorithm: algorithm,
             fingerprint: fingerprint,
-            signature: privateKey.hashAndSign(algorithm, request.params.message, 'base64', 'base64')
+            signature: openpgp.signClearMessage([privateKey], request.params.message)
           })
           break
         case 'success':
@@ -86,7 +90,7 @@ describe('ws/authenticate', function() {
           sendChallengeResponse(ws, request, {
             algorithm: algorithm,
             fingerprint: fingerprint.replace(/./g, 'a'),
-            signature: privateKey.hashAndSign(algorithm, request.params.message, 'base64', 'base64')
+            signature: openpgp.signClearMessage(privateKey, request.params.message)
           })
           break
         case 'success':
@@ -113,14 +117,14 @@ describe('ws/authenticate', function() {
           sendChallengeResponse(ws, request, {
             algorithm: algorithm,
             fingerprint: fingerprint,
-            signature: privateKey.hashAndSign(algorithm, request.params.message, 'base64', 'base64').replace(/./g, 'a')
+            signature: openpgp.signClearMessage(privateKey, request.params.message).replace(/./g, 'a')
           })
           break
         case 'success':
           assert.notOk('should have failed')
           break
         case 'error':
-          assert.equal(request.params.msg, 'error:04091077:rsa routines:INT_RSA_VERIFY:wrong signature length')
+          assert.include(request.params.msg, 'ASCII armor type')
           done()
           break
         default:
@@ -140,14 +144,14 @@ describe('ws/authenticate', function() {
           sendChallengeResponse(ws, request, {
             algorithm: algorithm,
             fingerprint: fingerprint,
-            signature: unauthorizedPrivateKey.hashAndSign(algorithm, request.params.message, 'base64', 'base64')
+            signature: openpgp.signClearMessage(unauthorizedPrivateKey, request.params.message)
           })
           break
         case 'success':
           assert.notOk('should have failed')
           break
         case 'error':
-          assert.equal(request.params.msg, 'error:0407006A:rsa routines:RSA_padding_check_PKCS1_type_1:block type is not 01')
+          assert.equal(request.params.msg, 'Authentication failed')
           done()
           break
         default:
@@ -166,8 +170,8 @@ describe('ws/authenticate', function() {
         case 'challenge':
           sendChallengeResponse(ws, request, {
             algorithm: algorithm,
-            fingerprint: unauthorizedPrivateKey.toPublicSshFingerprint('base64'),
-            signature: unauthorizedPrivateKey.hashAndSign(algorithm, request.params.message, 'base64', 'base64')
+            fingerprint: unauthorizedPrivateKey.primaryKey.fingerprint,
+            signature: openpgp.signClearMessage(unauthorizedPrivateKey, request.params.message)
           })
           break
         case 'success':
