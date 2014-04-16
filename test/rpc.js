@@ -1,7 +1,7 @@
 var mockUser = {}
 var mockPublicKey = {}
 var mockWs = {}
-var rpc = require('../lib/rpc')(mockUser, mockPublicKey, mockWs)
+var rpc = require('../lib/rpc').bind(mockUser, mockPublicKey, mockWs)
 var client = require('jayson').client(rpc)
 
 describe('rpc', function() {
