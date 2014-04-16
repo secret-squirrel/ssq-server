@@ -1,3 +1,4 @@
+/*
 var mockUser = {}
 var mockPublicKey = {}
 var mockWs = {}
@@ -18,3 +19,4 @@ describe('rpc', function() {
     })
   })
 })
+*/
