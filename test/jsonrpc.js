@@ -28,6 +28,11 @@ describe('jsonrpc', function() {
       assert.equal(response.jsonrpc, '2.0', 'Expected version 2.0')
       assert.equal(response.result, 'result', 'Result was not set')
     })
+    it('returns a null response when the result would be undefined', function() {
+      var request = jsonrpc.request('hello', 'world')
+      var response = jsonrpc.response(null, request, undefined)
+      assert.isNull(response.result, 'Result was undefined')
+    })
     it('builds JSON-RPC 2.0 error responses', function() {
       var request = jsonrpc.request('hello', 'world')
       var response = jsonrpc.response('Invalid request', request, 'result')
