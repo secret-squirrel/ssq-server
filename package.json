@@ -20,7 +20,6 @@
     "ws": "~0.4.31",
     "sequelize": "~2.0.0-dev10",
     "pg": "~2.11.1",
-    "jayson": "https://github.com/mmacaulay/jayson/tarball/master",
     "commander": "~2.2.0",
     "bunyan": "~0.22.1",
     "async": "~0.6.2",
