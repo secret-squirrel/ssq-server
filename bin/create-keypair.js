@@ -14,41 +14,41 @@ var writeFile = Q.nfbind(fs.writeFile)
 
 var getKey = function() {
   return getKeyParams()
-          .then(function(result) {
-            return createKey(result.passPhrase, result.bits)
-          })
+  .then(function(result) {
+    return createKey(result.passPhrase, result.bits)
+  })
 }
 
 var getUser = function() { 
   return getUserParams()
-          .then(function(email) {
-            return User.find({ where: { email: email } })
-          })
-          .then(function(result) {
-            return result.dataValues
-          })
+  .then(function(email) {
+    return User.find({ where: { email: email } })
+  })
+  .then(function(result) {
+    return result.dataValues
+  })
 }
 
 getKey()
-  .then(function(key) {
-    return getUser()
-    .then(function(user) {
-      return associateWithUser(user, key)
-    })
-    .then(function() {
-      return savePrivateKey(key)
-    })
-    .then(function() {
-      return showPublicKey(key)
-    })
+.then(function(key) {
+  return getUser()
+  .then(function(user) {
+    return associateWithUser(user, key)
   })
-  .catch(function(error) {
-    console.log('Error:')
-    console.log(error)
+  .then(function() {
+    return savePrivateKey(key)
   })
-  .done(function() {
-    process.exit()
+  .then(function() {
+    return showPublicKey(key)
   })
+})
+.catch(function(error) {
+  console.log('Error:')
+  console.log(error)
+})
+.done(function() {
+  process.exit()
+})
 
 function getKeyParams() {
   var schema = {
