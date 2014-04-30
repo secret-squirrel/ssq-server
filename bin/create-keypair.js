@@ -36,22 +36,10 @@ getKey()
       return associateWithUser(user, key)
     })
     .then(function() {
-      var filename = 'privatekey_' + key.primaryKey.fingerprint + '.asc'
-      var filepath = path.join(process.env['HOME'], filename)
-      return writeFile(filepath, key.armor())
-      .then(function() {
-        console.log('\n\n********************************************************\n')
-        console.log('Your private key has been saved to:\n')
-        console.log(filepath)
-      })
+      return savePrivateKey(key)
     })
     .then(function() {
-      console.log('\n********************************************************\n')
-      console.log('This is your public key:\n')
-      console.log(key.toPublic().armor())
-      console.log('\n********************************************************\n')
-      console.log('This is your key fingerprint:\n')
-      console.log(key.toPublic().primaryKey.fingerprint)
+      return showPublicKey(key)
     })
   })
   .catch(function(error) {
@@ -120,4 +108,24 @@ function associateWithUser(user, key) {
   .then(function(result) {
     return result.dataValue
   })
+}
+
+function savePrivateKey(key) {
+  var filename = 'privatekey_' + key.primaryKey.fingerprint + '.asc'
+  var filepath = path.join(process.env['HOME'], filename)
+  return writeFile(filepath, key.armor())
+  .then(function() {
+    console.log('\n\n********************************************************\n')
+    console.log('Your private key has been saved to:\n')
+    console.log(filepath)
+  })
+}
+
+function showPublicKey(key) {
+  console.log('\n********************************************************\n')
+  console.log('This is your public key:\n')
+  console.log(key.toPublic().armor())
+  console.log('\n********************************************************\n')
+  console.log('This is your key fingerprint:\n')
+  console.log(key.toPublic().primaryKey.fingerprint)
 }
