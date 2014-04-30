@@ -1,9 +1,11 @@
 {
   "test": {
-    "dialect": "postgres",
     "username": "postgres",
+    "dialect": "postgres",
+    "protocol": "postgres",
     "password": null,
     "database": "travis_ci_test",
+    "port": 5432,
     "host": "localhost"
   }
 }
