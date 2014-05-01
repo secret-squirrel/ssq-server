@@ -19,7 +19,7 @@ var getKey = function() {
   })
 }
 
-var getUser = function() { 
+var getUser = function() {
   return getUserParams()
   .then(function(email) {
     return User.find({ where: { email: email } })
@@ -28,27 +28,6 @@ var getUser = function() {
     return result.dataValues
   })
 }
-
-getKey()
-.then(function(key) {
-  return getUser()
-  .then(function(user) {
-    return associateWithUser(user, key)
-  })
-  .then(function() {
-    return savePrivateKey(key)
-  })
-  .then(function() {
-    return showPublicKey(key)
-  })
-})
-.catch(function(error) {
-  console.log('Error:')
-  console.log(error)
-})
-.done(function() {
-  process.exit()
-})
 
 function getKeyParams() {
   var schema = {
@@ -129,3 +108,24 @@ function showPublicKey(key) {
   console.log('This is your key fingerprint:\n')
   console.log(key.toPublic().primaryKey.fingerprint)
 }
+
+getKey()
+.then(function(key) {
+  return getUser()
+  .then(function(user) {
+    return associateWithUser(user, key)
+  })
+  .then(function() {
+    return savePrivateKey(key)
+  })
+  .then(function() {
+    return showPublicKey(key)
+  })
+})
+.catch(function(error) {
+  console.log('Error:')
+  console.log(error)
+})
+.done(function() {
+  process.exit()
+})
