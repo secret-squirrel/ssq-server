@@ -12,6 +12,8 @@ prompt.message = prompt.delimiter = ''
 var promptGet = Q.nfbind(prompt.get)
 var writeFile = Q.nfbind(fs.writeFile)
 
+var separator = '\n********************************************************\n'
+
 var getKey = function() {
   return getKeyParams()
   .then(function(result) {
@@ -90,22 +92,24 @@ function associateWithUser(user, key) {
 }
 
 function savePrivateKey(key) {
-  var filename = 'privatekey_' + key.primaryKey.fingerprint + '.asc'
-  var filepath = path.join(process.env['HOME'], filename)
-  return writeFile(filepath, key.armor())
+  var armored = key.armor()
+  var json = JSON.stringify([key.armor()])
+  var basename = 'privatekey_' + key.primaryKey.fingerprint
+  var basepath = path.join(process.env['HOME'], basename)
+
+  return writeFile(basepath + '.asc', armored)
+  .then(writeFile(basepath + '.json', json))
   .then(function() {
-    console.log('\n\n********************************************************\n')
-    console.log('Your private key has been saved to:\n')
-    console.log(filepath)
+    console.log(separator + 'Your private key has been saved:', basepath + '.asc|json')
+  }, function(reason) {
+    console.log(separator + 'Your private key failed to save:', reason)
   })
 }
 
 function showPublicKey(key) {
-  console.log('\n********************************************************\n')
-  console.log('This is your public key:\n')
+  console.log(separator + 'This is your public key:\n')
   console.log(key.toPublic().armor())
-  console.log('\n********************************************************\n')
-  console.log('This is your key fingerprint:\n')
+  console.log(separator + 'This is your key fingerprint:\n')
   console.log(key.toPublic().primaryKey.fingerprint)
 }
 
