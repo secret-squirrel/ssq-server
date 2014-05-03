@@ -8,3 +8,7 @@ before_script:
 env:
   global:
     - NODE_ENV=test
+branches:
+  only:
+    - master
+    - develop
